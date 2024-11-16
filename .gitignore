@@ -30,3 +30,28 @@
 *.exe
 *.out
 *.app
+
+# Ignore build directories (useful for compiled files)
+*/build/
+*/bin/
+*/obj/
+
+# Ignore IDE configuration files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+
+# Ignore compiled C++ files
+*.o
+*.out
+*.exe
+
+# Ignore temporary files (e.g., logs)
+*.log
+*.tmp
+
+# Ignore system files (macOS, Windows, etc.)
+.DS_Store      # macOS specific
+Thumbs.db      # Windows specific
