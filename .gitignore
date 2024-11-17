@@ -35,6 +35,8 @@
 */build/
 */bin/
 */obj/
+Source Code/.vscode
+Source Code/.idea
 
 # Ignore IDE configuration files
 .vscode/
