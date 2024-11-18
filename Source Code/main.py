@@ -10,6 +10,11 @@ General Notes:
 """
 
 import datetime
+import sys
+from PyQt5.QtWidgets import QApplication,QMainWindow
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QStringListModel
+from PyQt5 import uic
 
 # Retrieve today's date (day, month, year)
 date = datetime.date.today()
@@ -31,7 +36,58 @@ except FileExistsError:
     # Open existing files for reading (backup) and writing (database)
     backupdatabase = open(backend_path + "\\backupdatabase.txt", 'r')
     database = open(backend_path + "\\database.txt", 'w')
+class MainApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Streak Tracking Program")
+        self.setGeometry(960,440,500,500)
+        self.setWindowIcon(QIcon(cur_path + "\\Images\\Icon.webp"))
+        pass
 
+
+def get_obj_methods(obj):
+    methods = [attr for attr in dir(obj) if callable(getattr(obj, attr))]
+    print(dir(obj))
+
+def log_button_action():
+    global read_list, database, count,app,window
+    date_string = f"{date.day}-{date.month}-{date.year}"
+    if not read_list:
+        line_modify(f"Count = {count}",0)
+        line_modify(str=date_string)
+    else:
+        count = int(read_list[0][8:].strip())
+        if not((date_string + "\n") in  read_list):
+            line_modify(date_string)
+        check_streak()
+        line_modify(f"Count = {count}", 0)
+        print(f"You Logged In Today! Your Streak is at {count} Day(s)")
+    window.countDisplay.display(count)
+    window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
+def display_gui():
+    global count,app,window
+    app = QApplication(sys.argv)
+    window = uic.loadUi(cur_path + "\\GUI\\MainApp.ui")
+    window.countDisplay.display(count)
+    window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
+    window.logIn.clicked.connect(log_button_action)
+
+    window.show()
+    app.exec_()
+
+def check_streak():
+    global count,read_list
+    temp_list = read_list[-1::-1]
+    count = 1
+    for i in range(0, len(temp_list)):
+        if ("Count" in temp_list[i + 1]):
+            break
+        else:
+            result = True if (int(temp_list[i][0:2]) - int(temp_list[i + 1][0:2])) == 1 else False
+            if (result):
+                count += 1
+            else:
+                break
 """
 line_modify
 Purpose     : Modifies or appends a line in the database file.
@@ -40,15 +96,16 @@ Parameters  :
     - str (string, default ""): Content to write to the line.
 Returns     : None
 """
-def line_modify(line_index=-1, str=""):
+def line_modify(str="",line_index=-1):
     global read_list, database
     database.close()
     database = open(backend_path + "\\database.txt", 'w')
-    if 0 <= line_index < len(read_list):
+    if (0 <= line_index) and (line_index < len(read_list)):
         read_list[line_index] = str + "\n"
     else:
         read_list.append(str + "\n")
     database.writelines(read_list)
+
 
 """
 program_start
@@ -63,12 +120,12 @@ def program_start():
     print("Program Started")
     read_list = list(backupdatabase.readlines())
     database.writelines(read_list)
-    date_string = f"{date.day}-{date.month}-{date.year}"
-    if not read_list:
-        line_modify(0, f"Count = {count}")
-        line_modify(str=date_string)
-    else:
+    if read_list:
         count = int(read_list[0][8:].strip())
+        try:
+            read_list.remove("\n")
+        except ValueError:
+            pass
     backupdatabase.close()
 
 """
@@ -96,8 +153,10 @@ Returns     : None
 """
 def main():
     program_start()
+    display_gui()
     program_end()
 
 # Entry point of the program
 if __name__ == "__main__":
     main()
+
