@@ -5,15 +5,15 @@ This Python-based application is designed to help users track their progress and
 ## Motivation Behind the Project
 
 Motivation is what drives us to excel in many aspects of life. With enough motivation, humans can achieve remarkable advancements. Historically, most technological innovations were spurred by the need to strengthen military forces, with survival being a powerful motivator.
-<br>
+<br><br>
 However, in modern times, people often lose motivation quickly, which can hinder progress and slow down improvements. I discovered an effective method for maintaining motivation: the challenge. Humans thrive on challenges, which is why we find games so engaging. In games, the more difficult the challenge, the more invested people become in overcoming it.
-<br>
+<br><br>
 Inspired by this idea, I wondered: Why not introduce a challenge into my own life to excel? I realized that commitment could be achieved by maintaining a streak of consistent effort in the same area. For example, I wanted to improve my skills in learning English, developing my mindset, and coding, in addition to learning embedded systems and front-end development. While a timetable helps plan out activities, it's the streak system that ensures I stick to it.
-<br>
+<br><br>
 I experienced this first-hand when I committed to using language-learning apps like Duolingo and Elevated every day. The streak system not only kept me motivated but also helped me build consistency. Humans tend to value what they can preserve, and a streak—though simple—provides that sense of continuity and achievement.
-<br>
+<br><br>
 Thus, I decided to build a project that tracks such streaks. The app is a GUI application programmed in Python, designed to track streaks and reward users visually as they reach certain milestones. The data is stored locally in a text file on the device, which acts as the backend for the application. The app does not require an internet connection—it simply reads the date from the device and processes it to keep the streak count.
-<br>
+<br><br>
 By creating this application, I aim to help users build habits and maintain motivation, one streak at a time.
 <br>
 
@@ -22,67 +22,68 @@ By creating this application, I aim to help users build habits and maintain moti
 
 - Streak Tracking:
 
-- Tracks the number of consecutive days a user completes a task, starting with a count of 1.
-- Automatically updates the streak count when the user logs their activity.
+    - Tracks the number of consecutive days a user completes a task, starting with a count of 1.
+    - Automatically updates the streak count when the user logs their activity.
 
 - Database Management:
 
-- Saves the streak data in a local text file (database.txt) and creates a backup (backupdatabase.txt).
-- If no existing data is found, initializes the streak with a count of 1 and the current date.
-- Ensures data persistence through file-based storage, allowing the app to retain streak information even after closing and reopening.
+    - Saves the streak data in a local text file (database.txt) and creates a backup (backupdatabase.txt).
+    - If no existing data is found, initializes the streak with a count of 1 and the current date.
+    - Ensures data persistence through file-based storage, allowing the app to retain streak information even after closing and reopening.
 
 - Log Display:
 
-- Displays a list of dates when the user successfully logged in and completed the task.
-- Updates the log with the current date each time the user logs a streak.
-- Shows the current streak count and updates it after each successful login.
+    - Displays a list of dates when the user successfully logged in and completed the task.
+    - Updates the log with the current date each time the user logs a streak.
+    - Shows the current streak count and updates it after each successful login.
 
 - User Interface (UI):
 
-- Built using PyQt5, offering an intuitive graphical interface for logging and viewing streaks.
-- Displays a list of all logged dates and updates the streak count dynamically.
+    - Built using PyQt5, offering an intuitive graphical interface for logging and viewing streaks.
+    - Displays a list of all logged dates and updates the streak count dynamically.
 
 - Backup and Recovery:
 
-- Uses a backup database file to ensure that user data is not lost, even if the main database file is damaged or deleted.
+    - Uses a backup database file to ensure that user data is not lost, even if the main database file is damaged or deleted.
 
 ## Future Work:
 - Track Multiple Task Streaks:
-- Extend the application to track streaks for multiple tasks simultaneously.
-- Allow users to add, edit, and remove tasks, each with its own streak counter.
-- Provide a detailed summary of all tasks, showing streaks for each one.
+    - Extend the application to track streaks for multiple tasks simultaneously.
+    - Allow users to add, edit, and remove tasks, each with its own streak counter.
+    - Provide a detailed summary of all tasks, showing streaks for each one.
 
 - Visual Enhancements:
-- Add visual rewards like animations, badges, and motivational messages as the streaks increase.
-- Unlock features and rewards at certain streak milestones (e.g., after 5 days, 10 days, etc.).
+    - Add visual rewards like animations, badges, and motivational messages as the streaks increase.
+    - Unlock features and rewards at certain streak milestones (e.g., after 5 days, 10 days, etc.).
 
 - Notification System:
 
-- Implement daily reminders or push notifications to encourage users to log their streaks and keep their tasks on track.
-AI Integration:
+    - Implement daily reminders or push notifications to encourage users to log their streaks and keep their tasks on track.
 
-- Add an AI-driven chatbot to interact with the user and offer personalized motivational advice.
-- Use AI to suggest improvements or adjust tasks based on the user’s activity trends.
+- AI Integration:
+
+    - Add an AI-driven chatbot to interact with the user and offer personalized motivational advice.
+    - Use AI to suggest improvements or adjust tasks based on the user’s activity trends.
 
 - Data Insights:
 
-- Provide insights or analytics to help users understand their streak patterns (e.g., average streak length, longest streak).
-- Display motivational messages based on the streaks, such as congratulating the user for maintaining a long streak or encouraging them to start over if they miss a day.
+    - Provide insights or analytics to help users understand their streak patterns (e.g., average streak length, longest streak).
+    - Display motivational messages based on the streaks, such as congratulating the user for maintaining a long streak or encouraging them to start over if they miss a day.
 
 - Gamification Features:
 
-- Implement achievements and trophies for users to unlock based on their streaks.
-- Provide a leader board or comparison feature to compare user progress with others.
+    - Implement achievements and trophies for users to unlock based on their streaks.
+    - Provide a leader board or comparison feature to compare user progress with others.
 
 - Mobile and Cloud Integration (Long-term):
 
-- Consider implementing mobile app versions for easier access and tracking on the go.
-- Enable cloud syncing to store streak data across devices, allowing users to access their progress from anywhere.
+    - Consider implementing mobile app versions for easier access and tracking on the go.
+    - Enable cloud syncing to store streak data across devices, allowing users to access their progress from anywhere.
 
 - Optimization:
 
-- Optimize the file I/O operations for improved performance, especially when handling large amounts of streak data.
-- Investigate the potential for using a more robust database solution (like SQLite) for better data management as the app grows in complexity.
+    - Optimize the file I/O operations for improved performance, especially when handling large amounts of streak data.
+    - Investigate the potential for using a more robust database solution (like SQLite) for better data management as the app grows in complexity.
 
 
 ## Installation
