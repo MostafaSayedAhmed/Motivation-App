@@ -9,194 +9,181 @@ General Notes:
     - adv/feature/: Denotes future improvements or features.
 """
 
-import datetime
-import sys
-import os
-from PyQt5.QtWidgets import QApplication,QMainWindow
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QStringListModel
-from PyQt5 import uic
+import datetime  # Module to handle date and time operations
+import sys       # Module for handling script/executable-specific operations and GUI event loop
+import os        # Module for working with file system paths
+from PyQt5.QtWidgets import QApplication, QMainWindow
+# QApplication: Manages the main application loop
+# QMainWindow: Provides the framework for creating GUI windows
 
-# Retrieve today's date (day, month, year)
+from PyQt5.QtGui import QIcon  # (Unused) Allows customization of the window icon
+from PyQt5.QtCore import QStringListModel  # Used to populate a list view widget with data
+from PyQt5 import uic  # Connects the GUI layout (from Qt Designer) with the Python code dynamically
+
+# Retrieve today's date (format: year, month, day)
 date = datetime.date.today()
 
-
-# Handle paths for both script and executable scenarios
+# Determine the absolute path of the script or executable file
 if getattr(sys, 'frozen', False):
-    # Running as an executable
-    current_file_path = os.path.dirname(sys.executable)  # PyInstaller sets this for bundled apps
+    # If running as an executable (e.g., created using PyInstaller)
+    current_file_path = os.path.dirname(sys.executable)
 else:
-    # Running as a script
+    # If running as a script
     current_file_path = os.path.dirname(os.path.abspath(__file__))
 
-# Paths for application files
+# Define paths for application files
 cur_path = current_file_path + "\\"
 backend_path = cur_path + "backend"
 
-# Global Variables (Opt)
-read_list = []  # Stores data read from the file for all operations
-count = 1       # Tracks the current streak count (adv/track multiple streaks/)
+# Global variables for streak tracking and data storage
+read_list = []  # List to store lines read from the database file
+count = 1       # Current streak count (Opt: Extend to track multiple streaks)
 
-# File Initialization
+# Initialize database and backup files
 try:
     # Create database and backup files if they don't exist
     database = open(backend_path + "\\database.txt", 'x')
     backupdatabase = open(backend_path + "\\backupdatabase.txt", 'x')
 except FileExistsError:
-    # Open existing files for reading (backup) and writing (database)
+    # If files already exist, open them for the appropriate operations
     backupdatabase = open(backend_path + "\\backupdatabase.txt", 'r')
     database = open(backend_path + "\\database.txt", 'w')
-class MainApp(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Streak Tracking Program")
-        self.setGeometry(960,440,500,500)
-        self.setWindowIcon(QIcon(cur_path + "Images\\Icon.webp"))
-        pass
 
 """
 calculate_date_diff
-Purpose     : Calculate difference between dates taking in account if month end and year end.
+Purpose     : Calculate the difference between two dates and determine if the streak is maintained.
 Parameters  : 
-    - stringA : This is previous date
-    - stringB : This is current date
+    - stringA: The previous date (string format)
+    - stringB: The current date (string format)
 Returns     : 
-    - flag    : return value indicating streak :
-                - 0 : Means streak is still going
-                - 1 : Means streak is cut
+    - flag: Indicates streak status:
+        - 0: Streak is maintained
+        - 1: Streak is broken
 """
 def calculate_date_diff(stringA, stringB):
     global count
-    flag  = 0
+    flag = 0  # Default to streak maintained
     dateA = datetime.datetime.strptime(stringA.strip(), "%d-%M-%Y")
     dateB = datetime.datetime.strptime(stringB.strip(), "%d-%M-%Y")
-    if((dateB - dateA).days == 1):
-        count = count + 1
-    else :
-        flag = 1
+    if (dateB - dateA).days == 1:
+        count += 1  # Increment streak count
+    else:
+        flag = 1  # Indicate streak broken
     return flag
 
-
 """
-get_obj_methods:
-Purpose     : a test function used to display all methods in certain class object
-Parameter   : 
-    - obj   : Object instance of class whose methods are to be displayed
-Return      : None 
+get_obj_methods
+Purpose     : Display all methods available for a given object (used for debugging/testing).
+Parameters  : 
+    - obj: The object whose methods are to be listed.
+Returns     : None
 """
 def get_obj_methods(obj):
     methods = [attr for attr in dir(obj) if callable(getattr(obj, attr))]
-    print(dir(obj))
-
+    print(methods)
 
 """
 log_button_action
-Purpose     : Perform action when log in button is pressed
-                - Logging in 
-                - Calculating streak 
+Purpose     : Perform operations when the "Log In" button is clicked:
+              - Log today's date
+              - Calculate and update the streak
 Parameters  : None
 Returns     : None
 """
 def log_button_action():
-    global read_list, database, count,app,window
+    global read_list, database, count, app, window
     date_string = f"{date.day}-{date.month}-{date.year}"
     if not read_list:
-        line_modify(f"Count = {count}",0)
-        line_modify(str=date_string)
+        # First log entry
+        line_modify(f"Count = {count}", 0)
+        line_modify(date_string)
     else:
-        count = int(read_list[0][8:].strip())
-        if not((date_string + "\n") in  read_list):
+        # Update streak if today's date is not already logged
+        count = int(read_list[0][8:].strip())  # Extract current streak count
+        if not (date_string + "\n") in read_list:
             line_modify(date_string)
-        check_streak()
+            check_streak()
         line_modify(f"Count = {count}", 0)
         print(f"You Logged In Today! Your Streak is at {count} Day(s)")
-    window.countDisplay.display(count)
-    window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
 
+    # Update GUI elements
+    window.countDisplay.display(count)
+    window.logList.setModel(QStringListModel(["Log Dates : ", "".join(read_list[1:])]))
 
 """
 display_gui
-Purpose     : Display GUI Including
-                - Listing all logs
-                - Displaying streaks
-                - Connecting log_button_action to log in button 
+Purpose     : Display the main GUI window and connect events to handlers.
 Parameters  : None
 Returns     : None
 """
 def display_gui():
-    global count,app,window
+    global count, app, window
     app = QApplication(sys.argv)
-    window = uic.loadUi(cur_path + "GUI\\MainApp.ui")
-    window.countDisplay.display(count)
-    window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
-    window.logIn.clicked.connect(log_button_action)
+    window = uic.loadUi(cur_path + "GUI\\MainApp.ui")  # Load the GUI design
+    window.countDisplay.display(count)  # Display initial streak count
+    window.logList.setModel(QStringListModel(["Log Dates : ", "".join(read_list[1:])]))  # Populate log list
+    window.logIn.clicked.connect(log_button_action)  # Connect "Log In" button to its action
     window.show()
-    app.exec_()
-
+    app.exec_()  # Execute the application loop
 
 """
 check_streak
-Purpose     : check streak , calculate it and save its value to count
+Purpose     : Calculate the current streak based on log entries.
 Parameters  : None
 Returns     : None
 """
 def check_streak():
-    global count,read_list
-    temp_list = read_list[-1::-1]
-    count = 1
-    for i in range(0, len(temp_list)):
+    global count, read_list
+    temp_list = read_list[::-1]  # Reverse the list for backward iteration
+    count = 1  # Reset count
+    for i in range(len(temp_list) - 1):
         if 'Count' in temp_list[i + 1]:
             break
         else:
-            flag = calculate_date_diff(temp_list[i + 1],temp_list[i])
-            if flag == 1:
+            flag = calculate_date_diff(temp_list[i + 1], temp_list[i])
+            if flag == 1:  # Stop if the streak is broken
                 break
-
 
 """
 line_modify
-Purpose     : Modifies or appends a line in the database file.
+Purpose     : Modify or append lines in the database file.
 Parameters  : 
-    - line_index (int, default -1): Index of the line to modify (-1 to append).
-    - str (string, default ""): Content to write to the line.
+    - str (string): The content to write to the file.
+    - line_index (int): The line to modify (-1 for append).
 Returns     : None
 """
-def line_modify(str="",line_index=-1):
+def line_modify(str="", line_index=-1):
     global read_list, database
     database.close()
     database = open(backend_path + "\\database.txt", 'w')
-    if (0 <= line_index) and (line_index < len(read_list)):
+    if 0 <= line_index < len(read_list):
         read_list[line_index] = str + "\n"
     else:
         read_list.append(str + "\n")
     database.writelines(read_list)
 
-
 """
 program_start
-Purpose     : Initializes the program by copying backup file data to the database file.
-               - If the backup is empty, initializes with streak count and date.
-               - Otherwise, retrieves the current streak count.
+Purpose     : Initialize the program, load data from the backup file, and set up initial streak state.
 Parameters  : None
 Returns     : None
 """
 def program_start():
     global read_list, database, count
     print("Program Started")
-    read_list = list(backupdatabase.readlines())
-    database.writelines(read_list)
+    read_list = list(backupdatabase.readlines())  # Load backup data
+    database.writelines(read_list)  # Copy backup data to the database
     if read_list:
-        count = int(read_list[0][8:].strip())
+        count = int(read_list[0][8:].strip())  # Extract streak count
         try:
-            read_list.remove("\n")
+            read_list.remove("\n")  # Remove empty lines
         except ValueError:
             pass
     backupdatabase.close()
 
-
 """
 program_end
-Purpose     : Finalizes the program by copying the database file content to the backup.
+Purpose     : Finalize the program by saving the database to the backup file.
 Parameters  : None
 Returns     : None
 """
@@ -211,21 +198,18 @@ def program_end():
     backupdatabase.close()
     print("Program Exited")
 
-
 """
 main
-Purpose     : Defines the main flow of the program (start -> end).
+Purpose     : Define the main program flow (start -> GUI -> end).
 Parameters  : None
 Returns     : None
 """
 def main():
     program_start()
-    print(os.path.abspath(__file__))
+    print(os.path.abspath(__file__))  # Debug: Print current file path
     display_gui()
     program_end()
 
 # Entry point of the program
 if __name__ == "__main__":
     main()
-
-
