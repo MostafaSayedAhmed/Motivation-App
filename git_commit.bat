@@ -25,3 +25,5 @@ echo Commit and push completed successfully!
 
 :: 'pause' keeps the command prompt window open so you can see the success message.
 pause
+
+exit
