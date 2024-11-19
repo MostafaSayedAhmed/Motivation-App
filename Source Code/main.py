@@ -11,6 +11,7 @@ General Notes:
 
 import datetime
 import sys
+import os
 from PyQt5.QtWidgets import QApplication,QMainWindow
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QStringListModel
@@ -19,8 +20,17 @@ from PyQt5 import uic
 # Retrieve today's date (day, month, year)
 date = datetime.date.today()
 
+
+# Handle paths for both script and executable scenarios
+if getattr(sys, 'frozen', False):
+    # Running as an executable
+    current_file_path = os.path.dirname(sys.executable)  # PyInstaller sets this for bundled apps
+else:
+    # Running as a script
+    current_file_path = os.path.dirname(os.path.abspath(__file__))
+
 # Paths for application files
-cur_path = "G:\\Works\\Application\\Motivation-App\\Source Code\\"
+cur_path = current_file_path + "\\"
 backend_path = cur_path + "backend"
 
 # Global Variables (Opt)
@@ -41,14 +51,52 @@ class MainApp(QMainWindow):
         super().__init__()
         self.setWindowTitle("Streak Tracking Program")
         self.setGeometry(960,440,500,500)
-        self.setWindowIcon(QIcon(cur_path + "\\Images\\Icon.webp"))
+        self.setWindowIcon(QIcon(cur_path + "Images\\Icon.webp"))
         pass
 
+"""
+calculate_date_diff
+Purpose     : Calculate difference between dates taking in account if month end and year end.
+Parameters  : 
+    - stringA : This is previous date
+    - stringB : This is current date
+Returns     : 
+    - flag    : return value indicating streak :
+                - 0 : Means streak is still going
+                - 1 : Means streak is cut
+"""
+def calculate_date_diff(stringA, stringB):
+    global count
+    flag  = 0
+    dateA = datetime.datetime.strptime(stringA.strip(), "%d-%M-%Y")
+    dateB = datetime.datetime.strptime(stringB.strip(), "%d-%M-%Y")
+    if((dateB - dateA).days == 1):
+        count = count + 1
+    else :
+        flag = 1
+    return flag
 
+
+"""
+get_obj_methods:
+Purpose     : a test function used to display all methods in certain class object
+Parameter   : 
+    - obj   : Object instance of class whose methods are to be displayed
+Return      : None 
+"""
 def get_obj_methods(obj):
     methods = [attr for attr in dir(obj) if callable(getattr(obj, attr))]
     print(dir(obj))
 
+
+"""
+log_button_action
+Purpose     : Perform action when log in button is pressed
+                - Logging in 
+                - Calculating streak 
+Parameters  : None
+Returns     : None
+"""
 def log_button_action():
     global read_list, database, count,app,window
     date_string = f"{date.day}-{date.month}-{date.year}"
@@ -64,30 +112,47 @@ def log_button_action():
         print(f"You Logged In Today! Your Streak is at {count} Day(s)")
     window.countDisplay.display(count)
     window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
+
+
+"""
+display_gui
+Purpose     : Display GUI Including
+                - Listing all logs
+                - Displaying streaks
+                - Connecting log_button_action to log in button 
+Parameters  : None
+Returns     : None
+"""
 def display_gui():
     global count,app,window
     app = QApplication(sys.argv)
-    window = uic.loadUi(cur_path + "\\GUI\\MainApp.ui")
+    window = uic.loadUi(cur_path + "GUI\\MainApp.ui")
     window.countDisplay.display(count)
     window.logList.setModel(QStringListModel([ "Log Dates : ", "".join(read_list[1:])]))
     window.logIn.clicked.connect(log_button_action)
-
     window.show()
     app.exec_()
 
+
+"""
+check_streak
+Purpose     : check streak , calculate it and save its value to count
+Parameters  : None
+Returns     : None
+"""
 def check_streak():
     global count,read_list
     temp_list = read_list[-1::-1]
     count = 1
     for i in range(0, len(temp_list)):
-        if ("Count" in temp_list[i + 1]):
+        if 'Count' in temp_list[i + 1]:
             break
         else:
-            result = True if (int(temp_list[i][0:2]) - int(temp_list[i + 1][0:2])) == 1 else False
-            if (result):
-                count += 1
-            else:
+            flag = calculate_date_diff(temp_list[i + 1],temp_list[i])
+            if flag == 1:
                 break
+
+
 """
 line_modify
 Purpose     : Modifies or appends a line in the database file.
@@ -128,6 +193,7 @@ def program_start():
             pass
     backupdatabase.close()
 
+
 """
 program_end
 Purpose     : Finalizes the program by copying the database file content to the backup.
@@ -145,6 +211,7 @@ def program_end():
     backupdatabase.close()
     print("Program Exited")
 
+
 """
 main
 Purpose     : Defines the main flow of the program (start -> end).
@@ -153,10 +220,12 @@ Returns     : None
 """
 def main():
     program_start()
+    print(os.path.abspath(__file__))
     display_gui()
     program_end()
 
 # Entry point of the program
 if __name__ == "__main__":
     main()
+
 

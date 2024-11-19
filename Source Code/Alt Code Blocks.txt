@@ -1,0 +1,43 @@
+    """
+def calculate_date_diff(stringA, stringB):
+    global count
+    ListA = stringA.split('-')
+    ListB = stringB.split('-')
+    ListA = [int(ListA[i]) for i in range(0, len(ListA))]
+    ListB = [int(ListB[i]) for i in range(0, len(ListB))]
+
+    if (ListB[2] - ListA[2] == 0):
+        if (ListB[1] - ListA[1] == 1):
+            if (ListA[1] in [4, 6, 9, 11]):
+                if (ListA[0] == 30 and ListB[0] == 1):
+                    count += 1
+                else:
+                    pass
+            elif (ListA[1] == 2):
+                if ((ListA[0] == 28 and ListB[0] == 1 and ListA[2] % 4 != 0) or (
+                        ListA[0] == 29 and ListB[0] == 1 and ListA[2] % 4 == 0)):
+                    count += 1
+                else:
+                    pass
+            else:
+                if (ListA[0] == 31 and ListB[0] == 1):
+                    count += 1
+                else:
+                    pass
+        elif (ListB[1] - ListA[1] == 0):
+            if (ListB[0] - ListA[0] == 1):
+                count += 1
+            elif(ListB[0] - ListA[0] == 0):
+                pass # Same Day
+            else:
+                pass
+        else:
+            pass
+    elif (ListB[2] - ListA[2] == 1):
+        if (ListA[0] == 31 and ListB[0] == 1):
+            count += 1
+        else:
+            pass
+    else:
+        pass
+    """
