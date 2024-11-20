@@ -13,8 +13,10 @@ Returns     :
 """
 def calculate_date_diff(stringA, stringB,obj):
     flag = 0  # Default to streak maintained
-    dateA = datetime.datetime.strptime(stringA.strip(), "%d-%M-%Y")
-    dateB = datetime.datetime.strptime(stringB.strip(), "%d-%M-%Y")
+    stringA = stringA.strip()
+    stringB = stringB.strip()
+    dateA = datetime.datetime.strptime(stringA, "%d-%M-%Y")
+    dateB = datetime.datetime.strptime(stringB, "%d-%M-%Y")
     if (dateB - dateA).days == 1:
         obj.set_count(obj.get_count() + 1)  # Increment streak count
     else:

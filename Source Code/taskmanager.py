@@ -41,3 +41,5 @@ class taskmanager :
             check_streak(self,self.readlist)
             line_modify(f"Count = {self.count}", 0,self.readlist,self.database_path)
             print(f"You Logged In Today! Your Streak is at {self.count} Day(s)")
+        with open(self.database_path + "\\database.txt",'r') as database:
+            self.readlist = database.readlines()

@@ -44,12 +44,11 @@ count = 1       # Current streak count (Opt: Extend to track multiple streaks)
 # Initialize database and backup files
 try:
     # Create database and backup files if they don't exist
-    database = open(backend_path + "\\database.txt", 'x')
-    backupdatabase = open(backend_path + "\\backupdatabase.txt", 'x')
+    open(backend_path + "\\database.txt", 'x')
+    open(backend_path + "\\backupdatabase.txt", 'x')
 except FileExistsError:
     # If files already exist, open them for the appropriate operations
-    backupdatabase = open(backend_path + "\\backupdatabase.txt", 'r')
-    database = open(backend_path + "\\database.txt", 'w')
+    pass
 
 """
 get_obj_methods
@@ -61,6 +60,80 @@ Returns     : None
 def get_obj_methods(obj):
     methods = [attr for attr in dir(obj) if callable(getattr(obj, attr))]
     print(methods)
+
+def data_integrity_check():
+    # Check Data Integrity with backupdatabase file
+    with open(backend_path + "\\backupdatabase.txt", 'r') as backupdatabase:
+        datalist = backupdatabase.readlines()
+
+    dataSet = set(datalist)
+    datalist = list(dataSet)
+
+    for i in range(0, len(datalist)):
+        if "Count" in datalist[i] or datalist[i] == '\n':
+            continue
+
+        for j in ['/', ':', ';']:
+                datalist[i] = datalist[i].replace(j, '-')
+
+        dateStringList = datalist[i].split('-')
+        if int(dateStringList[1]) in [3, 6, 9, 11]:
+            if 0 < int(dateStringList[0]) <= 30:
+                pass
+            else:
+                datalist[i] = "\n"
+        elif int(dateStringList[1]) in [1, 4, 5, 7, 8, 10, 12]:
+            if 0 < int(dateStringList[0]) <= 31:
+                pass
+            else:
+                datalist[i] = "\n"
+        elif int(dateStringList[1]) == 2:
+            if int(dateStringList[2]) % 4 == 0:
+                if 0 < int(dateStringList[0]) <= 29:
+                    pass
+                else:
+                    datalist[i] = "\n"
+            else:
+                if 0 < int(dateStringList[0]) <= 28:
+                    pass
+                else:
+                    datalist[i] = "\n"
+        else:
+            datalist[i] = "\n"
+        if datalist[i][-1] != "\n":
+            datalist[i] = datalist[i] + "\n"
+    try:
+        datalist.remove("\n")
+    except ValueError:
+        pass
+
+
+    templist = []
+    for i in range(0,len(datalist)):
+        if("Count" in datalist[i]):
+            continue
+        Interlist = datalist[i].split('-')[-1::-1]
+        Interstring = f"{Interlist[0]}-{Interlist[1]}-{Interlist[2]}"
+        templist.append(Interstring)
+    templist.sort()
+
+    OutputList = []
+    for i in range(0,len(templist)):
+        if("Count" in templist[i]):
+            continue
+        Interlist = templist[i].split('-')[-1::-1]
+        Interstring = f"{Interlist[0]}-{Interlist[1]}-{Interlist[2]}"
+        OutputList.append(Interstring)
+
+    for i in range(0,len(datalist)):
+        if "Count" in datalist[i]:
+            break
+    datalist = [datalist[i]]
+    for i in range(0,len(OutputList)):
+        datalist.append(OutputList[i])
+
+    with open(backend_path + "\\backupdatabase.txt", 'w') as backupdatabase:
+        backupdatabase.writelines(datalist)
 
 """
 log_button_action
@@ -110,6 +183,8 @@ Returns     : None
 """
 def program_start():
     print("Program Started")
+    data_integrity_check()
+
 
 """
 program_end
@@ -135,4 +210,13 @@ def main():
 # Entry point of the program
 if __name__ == "__main__":
     main()
+    # listStr = ["abc","def","ghi"]
+    # for i in range(0,len(listStr)):
+    #     if('a' in listStr[i]):
+    #         count = i
+    #         break
+    #     else:
+    #         continue
+    # print(i)
+
 
