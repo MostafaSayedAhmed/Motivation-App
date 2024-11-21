@@ -152,6 +152,7 @@ def log_button_action():
     # Update GUI elements
 
     window.countDisplay.display(login.get_count())
+    window.countDisplay.setStyleSheet(f"color:hsl({((login.get_count())*10)%360},100%,50%);")
     window.logList.setModel(QStringListModel(["Log Dates : ", "".join(login.readlist[1:])]))
 
     with open(backend_path + "\\backupdatabase.txt", 'w') as backupdatabaseGUI:
@@ -171,6 +172,10 @@ def display_gui():
     with open(backend_path + "\\backupdatabase.txt", 'r') as init_database:
         window.logList.setModel(QStringListModel(["Log Dates : ","".join(init_database.readlines()[1:])]))  # Populate log list
     window.logIn.clicked.connect(log_button_action)  # Connect "Log In" button to its action
+
+    # Scanning Available Methods In Certain Widget
+    # get_obj_methods(window.countDisplay)
+
     window.show()
     app.exec_()  # Execute the application loop
 
@@ -210,13 +215,6 @@ def main():
 # Entry point of the program
 if __name__ == "__main__":
     main()
-    # listStr = ["abc","def","ghi"]
-    # for i in range(0,len(listStr)):
-    #     if('a' in listStr[i]):
-    #         count = i
-    #         break
-    #     else:
-    #         continue
-    # print(i)
+
 
 

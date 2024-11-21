@@ -18,7 +18,7 @@ IF "%~1"=="" (
 git commit -m "%~1"
 
 :: This line pushes the committed changes to the 'main' branch of the remote repository named 'origin'.
-git push origin main
+git push origin txtFileBranch
 
 :: Once the process is completed, this line displays a success message.
 echo Commit and push completed successfully!
