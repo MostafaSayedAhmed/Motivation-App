@@ -4,6 +4,10 @@
 :: The following line is a comment, explaining what this script does. It doesn't get executed.
 :: This script automates the process of committing and pushing changes to a Git repository without using a desktop application.
 
+set var=main
+:: Change to certain branch
+git checkout %var%
+
 :: The command below adds all modified or new files to the staging area in Git, preparing them for a commit.
 git add .
 
@@ -18,7 +22,7 @@ IF "%~1"=="" (
 git commit -m "%~1"
 
 :: This line pushes the committed changes to the 'main' branch of the remote repository named 'origin'.
-git push origin txtFileBranch
+git push origin %var%
 
 :: Once the process is completed, this line displays a success message.
 echo Commit and push completed successfully!
