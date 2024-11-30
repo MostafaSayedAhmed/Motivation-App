@@ -1,24 +1,28 @@
 import datetime
+import filemanager
 
 """
 calculate_date_diff
 Purpose     : Calculate the difference between two dates and determine if the streak is maintained.
 Parameters  :
-    - stringA: The previous date (string format)
-    - stringB: The current date (string format)
+    - stringA : The previous date (string format)
+    - stringB : The current date (string format)
+    - taskObj : Object use to manipulate tasking operation (Task Object format)
 Returns     :
     - flag: Indicates streak status:
         - 0: Streak is maintained
         - 1: Streak is broken
 """
-def calculate_date_diff(stringA, stringB,obj):
-    flag = 0  # Default to streak maintained
-    stringA = stringA.strip()
-    stringB = stringB.strip()
-    dateA = datetime.datetime.strptime(stringA, "%d-%M-%Y")
-    dateB = datetime.datetime.strptime(stringB, "%d-%M-%Y")
+def calculate_date_diff(stringA, stringB,taskObj):
+    flag = 0                    # Default to streak maintained
+    stringA = stringA.strip()   # To removes spaces if there are any
+    stringB = stringB.strip()   # To removes spaces if there are any
+    dateA = datetime.datetime.strptime(stringA, "%d-%M-%Y")     # Make datetime object from first string
+    dateB = datetime.datetime.strptime(stringB, "%d-%M-%Y")     # Make datetime object from second string
+    # If difference in date is one , the streak is maintained
     if (dateB - dateA).days == 1:
-        obj.set_count(obj.get_count() + 1)  # Increment streak count
+        taskObj.set_count(taskObj.get_count() + 1)  # Increment streak count
+    # Otherwise the streak is not maintained
     else:
         flag = 1  # Indicate streak broken
     return flag
@@ -29,32 +33,10 @@ Purpose     : Calculate the current streak based on log entries.
 Parameters  : None
 Returns     : None
 """
-def check_streak(obj,read_list):
-    temp_list = read_list[::-1]  # Reverse the list for backward iteration
-    obj.set_count(1)  # Reset count
-
-
+def check_streak(taskObj):
+    temp_list = taskObj.logList[::-1]  # Reverse the list for backward iteration
+    taskObj.set_count(1)               # Reset count
+    # Calculate Count of streak by finding whether difference between dates is one or more
     for i in range(len(temp_list) - 1):
-        if 'Count' in temp_list[i + 1]:
+        if calculate_date_diff(temp_list[i + 1], temp_list[i], taskObj):
             break
-        else:
-            flag = calculate_date_diff(temp_list[i + 1], temp_list[i],obj)
-            if flag == 1:  # Stop if the streak is broken
-                break
-
-
-"""
-line_modify
-Purpose     : Modify or append lines in the database file.
-Parameters  : 
-    - str (string): The content to write to the file.
-    - line_index (int): The line to modify (-1 for append).
-Returns     : None
-"""
-def line_modify(str="", line_index=-1 , read_list = [],backend_path = ""):
-    if 0 <= line_index < len(read_list):
-        read_list[line_index] = str + "\n"
-    else:
-        read_list.append(str + "\n")
-    with open(backend_path + "\\database.txt", 'w') as database:
-        database.writelines(read_list)

@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/images">
+    <file>images/Morning.png</file>
+    <file>images/minus_sign.png</file>
+    <file>images/plus_sign.png</file>
+    <file>images/Night.png</file>
+    <file>images/steve-busch-L6WNhz2Mrvc-unsplash.jpg</file>
+  </qresource>
+</RCC>

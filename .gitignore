@@ -37,6 +37,8 @@
 */obj/
 Source Code/.vscode
 Source Code/.idea
+Source Code/_pycache_
+
 
 # Ignore IDE configuration files
 .vscode/
